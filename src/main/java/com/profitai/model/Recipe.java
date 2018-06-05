@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -31,6 +30,7 @@ public class Recipe {
 	private String description;
 	private Integer prepTime;
 	private Integer cookTime;
+	private Integer servings;
 	private String source;
 	private String url;
 	

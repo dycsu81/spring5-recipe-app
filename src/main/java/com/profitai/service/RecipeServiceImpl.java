@@ -1,6 +1,7 @@
 package com.profitai.service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -28,5 +29,17 @@ public class RecipeServiceImpl implements RecipeService {
 		recipeRep.findAll().iterator().forEachRemaining(recipeSet::add);
 		
 		return recipeSet;
+	}
+	
+	@Override
+	public Recipe findById(Long l) {
+		
+		Optional<Recipe> recipeOptional = recipeRep.findById(l);
+		
+		if (!recipeOptional.isPresent()) {
+			throw new RuntimeException("Recipe not found");
+		}
+		
+		return recipeOptional.get();
 	}
 }
