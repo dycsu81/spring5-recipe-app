@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.profitai.commands.RecipeCommand;
+import com.profitai.converters.RecipeCommandToRecipe;
+import com.profitai.converters.RecipeToRecipeCommand;
 import com.profitai.model.Recipe;
 import com.profitai.repository.RecipeRepository;
 
@@ -15,18 +18,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
-	private final RecipeRepository recipeRep;
-	
-	public RecipeServiceImpl(RecipeRepository recipeRep) {
+	private final RecipeRepository recipeRepository;
+	private final RecipeCommandToRecipe recipeCommandToRecipe;
+	private final RecipeToRecipeCommand recipeToRecipeCommand;
+
+	public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe,
+			RecipeToRecipeCommand recipeToRecipeCommand) {
 		super();
-		this.recipeRep = recipeRep;
+		this.recipeRepository = recipeRepository;
+		this.recipeCommandToRecipe = recipeCommandToRecipe;
+		this.recipeToRecipeCommand = recipeToRecipeCommand;
 	}
 
 	@Override
 	public Set<Recipe> getRecipes() {
 		log.debug("getRecipes");
 		Set<Recipe> recipeSet =  new HashSet<Recipe>();
-		recipeRep.findAll().iterator().forEachRemaining(recipeSet::add);
+		recipeRepository.findAll().iterator().forEachRemaining(recipeSet::add);
 		
 		return recipeSet;
 	}
@@ -34,12 +42,21 @@ public class RecipeServiceImpl implements RecipeService {
 	@Override
 	public Recipe findById(Long l) {
 		
-		Optional<Recipe> recipeOptional = recipeRep.findById(l);
+		Optional<Recipe> recipeOptional = recipeRepository.findById(l);
 		
 		if (!recipeOptional.isPresent()) {
 			throw new RuntimeException("Recipe not found");
 		}
 		
 		return recipeOptional.get();
+	}
+
+	@Override
+	public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+		Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
+		
+		Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+        log.debug("Saved RecipeId:" + savedRecipe.getId());
+        return recipeToRecipeCommand.convert(savedRecipe);
 	}
 }
