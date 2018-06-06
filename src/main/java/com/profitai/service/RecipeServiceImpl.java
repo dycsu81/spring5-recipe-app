@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.profitai.commands.RecipeCommand;
 import com.profitai.converters.RecipeCommandToRecipe;
@@ -51,6 +52,7 @@ public class RecipeServiceImpl implements RecipeService {
 		return recipeOptional.get();
 	}
 
+	@Transactional
 	@Override
 	public RecipeCommand saveRecipeCommand(RecipeCommand command) {
 		Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
@@ -58,5 +60,11 @@ public class RecipeServiceImpl implements RecipeService {
 		Recipe savedRecipe = recipeRepository.save(detachedRecipe);
         log.debug("Saved RecipeId:" + savedRecipe.getId());
         return recipeToRecipeCommand.convert(savedRecipe);
+	}
+
+	@Transactional
+	@Override
+	public RecipeCommand findCommandById(Long l) {
+		return recipeToRecipeCommand.convert(findById(l));
 	}
 }
