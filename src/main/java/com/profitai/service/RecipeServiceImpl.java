@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.profitai.commands.RecipeCommand;
 import com.profitai.converters.RecipeCommandToRecipe;
 import com.profitai.converters.RecipeToRecipeCommand;
+import com.profitai.exceptions.NotFoundException;
 import com.profitai.model.Recipe;
 import com.profitai.repository.RecipeRepository;
 
@@ -46,7 +47,7 @@ public class RecipeServiceImpl implements RecipeService {
 		Optional<Recipe> recipeOptional = recipeRepository.findById(l);
 		
 		if (!recipeOptional.isPresent()) {
-			throw new RuntimeException("Recipe not found");
+			throw new NotFoundException("Recipe not found for id:"+l);
 		}
 		
 		return recipeOptional.get();
